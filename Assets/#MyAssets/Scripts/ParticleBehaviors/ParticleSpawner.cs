@@ -38,7 +38,7 @@ public class ParticleSpawner : MonoBehaviour, IUpdatable
     {
         if (m_spawnedParticles < m_totalNumberOfParticlesToSpawn)
         {
-            for (int i = 0; i < m_particlesToSpawnAtOnce; i++)
+            for (int i = 0; m_spawnedParticles < m_totalNumberOfParticlesToSpawn && i < m_particlesToSpawnAtOnce; i++)
             {
                 Instantiate(m_particleToSpawn, m_positionToSpawnAt, Quaternion.identity, transform);
                 m_spawnedParticles++;
