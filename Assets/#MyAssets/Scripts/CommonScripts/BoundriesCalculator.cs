@@ -19,5 +19,9 @@ public class BoundriesCalculator : GenericSingleton<BoundriesCalculator>
         m_topRightCorner = l_mainCamera.ViewportToWorldPoint(new Vector3(1, 1, 10));
     }
 
+    /// <summary>
+    /// returns Tupple of Boundries
+    /// - Bottom Left & Top Right respectively
+    /// </summary>
     public static (Vector2, Vector2) GetBounries { get { return (Instance.m_bottomLeftCorner, Instance.m_topRightCorner);} }
 }
