@@ -84,33 +84,42 @@ public class ParticalBehavior_Mannual : ParticleBehavior, IUpdatable
         transform.position = m_currentPosition;
     }
 
+    Vector3 l_direction;
+    //Vector3 l_particlePosition;
+    float l_distance;
     private void CheckForCollisionInSpace()
     {
         //IReadOnlyList<Transform> l_particles = m_currentSpace.ParticlesInSpace;
-        Vector3 l_particlePosition;
+        
 
-        for(int i = 0; i < m_currentSpace.ParticlesInSpace.Count; i++)
+        for (int i = 0; i < m_currentSpace.ParticlesInSpace.Count; i++)
         {
             if(m_currentSpace.ParticlesInSpace[i] == transform)
             {
                 continue;
             }
 
-            l_particlePosition = m_currentSpace.ParticlesInSpace[i].position;
+            //l_particlePosition = m_currentSpace.ParticlesInSpace[i].position;
+            l_direction = m_currentSpace.ParticlesInSpace[i].position - m_currentPosition;
+            l_distance = Mathf.Sqrt(l_direction.x * l_direction.x + l_direction.y * l_direction.y);
 
-            if(Vector3.Distance(m_currentPosition, l_particlePosition) <= m_radius)
+            if(l_distance <= m_radius)
+            //if(Vector3.Distance(l_particlePosition, m_currentPosition) <= (m_radius * 2))
             {
-                if(m_currentPosition.x <= l_particlePosition.x || m_currentPosition.x >= l_particlePosition.x)
-                {
-                    m_speedDirection.x *= -1;
-                    return;
-                }
-                
-                if(m_currentPosition.y <= l_particlePosition.y || m_currentPosition.y >= l_particlePosition.y)
-                {
-                    m_speedDirection.y *= -1;
-                    return;
-                }
+                //if (m_currentPosition.x <= l_particlePosition.x || m_currentPosition.x >= l_particlePosition.x)
+                //{
+                //    m_speedDirection.x *= -1;
+                //    return;
+                //}
+
+                //if (m_currentPosition.y <= l_particlePosition.y || m_currentPosition.y >= l_particlePosition.y)
+                //{
+                //    m_speedDirection.y *= -1;
+                //    return;
+                //}
+
+                m_speedDirection = (l_direction / -l_distance);
+                return;
             }
         }
     }

@@ -16,6 +16,10 @@ public class FPSCounter : GenericSingleton<FPSCounter>, IUpdatable
     protected override void Awake()
     {
         base.Awake();
+    }
+
+    private void Start()
+    {
         UpdateManager.SubscribeForUpdateCall(this);
     }
 

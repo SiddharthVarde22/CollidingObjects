@@ -6,8 +6,8 @@ public class SpacePartitions : GenericSingleton<SpacePartitions>
 {
     [SerializeField]
     float m_lengthOfSpace = 1;
-    [SerializeField]
-    float m_extraDistonceToAdd = 0.1f;
+    //[SerializeField]
+    //float m_extraDistonceToAdd = 0.1f;
 
     int m_xLength, m_yLength;
     Vector2 m_topLeftCorner;

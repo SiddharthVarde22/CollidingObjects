@@ -1,10 +1,9 @@
-using System.Threading.Tasks;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class ParticleSpawner : MonoBehaviour, IUpdatable
+public class ParticleSpawner_Custom : MonoBehaviour, IUpdatable
 {
-    [SerializeField]
-    ParticleBehavior m_particleToSpawn;
     [SerializeField]
     int m_totalNumberOfParticlesToSpawn;
     [SerializeField]
@@ -18,23 +17,24 @@ public class ParticleSpawner : MonoBehaviour, IUpdatable
     [SerializeField]
     private int m_particlesToSpawnAtOnce = 50;
 
+
+    [SerializeField]
+    bool m_particleShouldUpdateFromStart = true;
+    [SerializeField]
+    float m_particleSpeed = 1, m_particleScale = 0.2f;
+
+
     private int m_spawnedParticles = 0;
     Vector2 m_bottomLeftBoundry, m_topRightBoundy;
     public bool ShouldUpdate { get { return m_shouldUpdate; } }
 
     private void Start()
     {
-        //for(int i = 0; i < m_numberOfParticlesToSpawn; i++)
-        //{
-        //    Instantiate(m_particleToSpawn, m_positionToSpawnAt, Quaternion.identity, transform);
-        //    //await Task.Delay(1);
-        //}
         (m_bottomLeftBoundry, m_topRightBoundy) = BoundriesCalculator.GetBounries;
-        //Debug.LogError(m_bottomLeftBoundry + " , " + m_topRightBoundy);
         UpdateManager.SubscribeForUpdateCall(this);
     }
 
-    protected void OnDestroy()
+    private void OnDestroy()
     {
         UpdateManager.UnsubscribeFromUpdateCall(this);
     }
@@ -50,7 +50,9 @@ public class ParticleSpawner : MonoBehaviour, IUpdatable
                     m_positionToSpawnAt.x = Random.Range(m_bottomLeftBoundry.x + m_distanceFromBoundry, m_topRightBoundy.x - m_distanceFromBoundry);
                     m_positionToSpawnAt.y = Random.Range(m_bottomLeftBoundry.y + m_distanceFromBoundry, m_topRightBoundy.y - m_distanceFromBoundry);
                 }
-                Instantiate<ParticleBehavior>(m_particleToSpawn, m_positionToSpawnAt, Quaternion.identity, transform);
+
+                new Particle_CustomDraw(m_particleShouldUpdateFromStart, m_particleSpeed, m_particleScale, m_positionToSpawnAt);
+
                 m_spawnedParticles++;
             }
         }
