@@ -6,9 +6,9 @@ using UnityEngine;
 public class SpaceData
 {
     Vector2 m_topLeftCorner, m_bottomRightCorner;
-    List<Transform> m_particles = new List<Transform>();
+    List<ISpaceble> m_particles = new List<ISpaceble>();
 
-    public IReadOnlyList<Transform> ParticlesInSpace { get { return m_particles; } }
+    public IReadOnlyList<ISpaceble> ParticlesInSpace { get { return m_particles; } }
 
     public void Init(Vector2 a_topLeftCorner, float a_lengthOfSpace)
     {
@@ -23,25 +23,25 @@ public class SpaceData
         //Debug.LogError(m_topLeftCorner + " , " + m_bottomRightCorner);
     }
 
-    public void AddParticle(Transform a_particleToAdd)
+    public void AddParticle(ISpaceble a_particleToAdd)
     {
         if (m_particles.Contains(a_particleToAdd))
         {
-            Debug.LogError(a_particleToAdd.name + " Already exists in list");
+            Debug.LogError(" Already exists in list");
             return;
         }
 
         m_particles.Add(a_particleToAdd);
     }
 
-    public void RemoveParticle(Transform a_particleToRemove)
+    public void RemoveParticle(ISpaceble a_particleToRemove)
     {
         if (m_particles.Contains(a_particleToRemove))
         {
             m_particles.Remove(a_particleToRemove);
             return;
         }
-        Debug.LogError(a_particleToRemove.name + " Does not Exists in list", a_particleToRemove.gameObject);
+        Debug.LogError(" Does not Exists in list");
     }
 
     public bool CheckIfPositionExistsInSpace(Vector3 a_position)

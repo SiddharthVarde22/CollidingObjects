@@ -2,16 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Particle_CustomDraw : IUpdatable
+public class Particle_CustomDraw : IUpdatable, ISpaceble
 {
     bool m_shouldUpdate;
-    float m_movementSpeed, m_scale;
+    float m_movementSpeed;
 
-    Transform m_transform;
+    Matrix4x4 m_worldMatix;
 
     Vector3 m_speedDirection;
     Vector2 m_bottomLeftCorner, m_topRightCorner;
     Vector3 m_currentPosition;
+    Vector3 m_scale;
+    Quaternion m_rotation;
     SpaceData m_currentSpace;
     int m_indexToGetDrawn;
 
@@ -21,15 +23,17 @@ public class Particle_CustomDraw : IUpdatable
     {
         m_shouldUpdate = a_shouldUpdate;
         m_movementSpeed = a_speed;
-        m_transform.localScale = Vector3.one * a_scale;
-        m_transform.position = a_position;
+        
+        //m_worldMatix.position = a_position;
         m_currentPosition = a_position;
-        m_scale = a_scale;
+        m_scale = Vector3.one * a_scale;
+        m_rotation = Quaternion.identity;
+        m_worldMatix.SetTRS(a_position, m_rotation, m_scale);
 
 
         m_speedDirection = (new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), 0)).normalized;
         (m_bottomLeftCorner, m_topRightCorner) = BoundriesCalculator.GetBounries;
-        m_indexToGetDrawn = Particle_Drawer.GetAddedToMtrixList(m_transform.localToWorldMatrix);
+        m_indexToGetDrawn = Particle_Drawer.GetAddedToMtrixList(m_worldMatix);
 
         UpdateManager.SubscribeForUpdateCall(this);
         GetAddedToSpace();
@@ -43,7 +47,7 @@ public class Particle_CustomDraw : IUpdatable
     public void OnUpdateCalled(float a_deltaTime)
     {
         m_currentPosition += (m_speedDirection * (m_movementSpeed * a_deltaTime));
-        m_transform.position = m_currentPosition;
+        m_worldMatix.SetTRS(m_currentPosition, m_rotation, m_scale);
 
         if (!m_currentSpace.CheckIfPositionExistsInSpace(m_currentPosition))
         {
@@ -54,34 +58,34 @@ public class Particle_CustomDraw : IUpdatable
         CheckForBoundries();
         CheckForCollisionInSpace();
 
-        Particle_Drawer.UpdateParticleMatrixInList(m_indexToGetDrawn, m_transform.localToWorldMatrix);
+        Particle_Drawer.UpdateParticleMatrixInList(m_indexToGetDrawn, m_worldMatix);
     }
 
     private void CheckForBoundries()
     {
-        if (m_currentPosition.x <= (m_bottomLeftCorner.x + m_scale))
+        if (m_currentPosition.x <= (m_bottomLeftCorner.x + m_scale.x))
         {
             m_speedDirection.x *= -1;
-            m_currentPosition.x = m_bottomLeftCorner.x + m_scale;
+            m_currentPosition.x = m_bottomLeftCorner.x + m_scale.x;
         }
-        else if (m_currentPosition.x >= (m_topRightCorner.x - m_scale))
+        else if (m_currentPosition.x >= (m_topRightCorner.x - m_scale.x))
         {
             m_speedDirection.x *= -1;
-            m_currentPosition.x = m_topRightCorner.x - m_scale;
+            m_currentPosition.x = m_topRightCorner.x - m_scale.x;
         }
 
-        if (m_currentPosition.y <= (m_bottomLeftCorner.y + m_scale))
+        if (m_currentPosition.y <= (m_bottomLeftCorner.y + m_scale.x))
         {
             m_speedDirection.y *= -1;
-            m_currentPosition.y = m_bottomLeftCorner.y + m_scale;
+            m_currentPosition.y = m_bottomLeftCorner.y + m_scale.x;
         }
-        else if (m_currentPosition.y >= (m_topRightCorner.y - m_scale))
+        else if (m_currentPosition.y >= (m_topRightCorner.y - m_scale.x))
         {
             m_speedDirection.y *= -1;
-            m_currentPosition.y = m_topRightCorner.y - m_scale;
+            m_currentPosition.y = m_topRightCorner.y - m_scale.x;
         }
 
-        m_transform.position = m_currentPosition;
+        m_worldMatix.SetTRS(m_currentPosition, m_rotation, m_scale);
     }
 
     Vector3 m_directionFromParticle;
@@ -90,16 +94,16 @@ public class Particle_CustomDraw : IUpdatable
     {
         for (int i = 0; i < m_currentSpace.ParticlesInSpace.Count; i++)
         {
-            if (m_currentSpace.ParticlesInSpace[i] == m_transform)
+            if (m_currentSpace.ParticlesInSpace[i] == this)
             {
                 continue;
             }
 
-            m_directionFromParticle = m_currentSpace.ParticlesInSpace[i].position - m_currentPosition;
+            m_directionFromParticle = m_currentSpace.ParticlesInSpace[i].GetPosition() - m_currentPosition;
             m_distanceFromParticle = Mathf.Sqrt(m_directionFromParticle.x * m_directionFromParticle.x 
                 + m_directionFromParticle.y * m_directionFromParticle.y);
 
-            if (m_distanceFromParticle <= m_scale)
+            if (m_distanceFromParticle <= m_scale.x)
             {
                 m_speedDirection = (m_directionFromParticle / -m_distanceFromParticle);
                 return;
@@ -114,14 +118,19 @@ public class Particle_CustomDraw : IUpdatable
         {
             Debug.LogError("Current space is null");
         }
-        m_currentSpace.AddParticle(m_transform);
+        m_currentSpace.AddParticle(this);
     }
 
     private void GetRemovedFromSpace()
     {
         if (m_currentSpace != null)
         {
-            m_currentSpace.RemoveParticle(m_transform);
+            m_currentSpace.RemoveParticle(this);
         }
+    }
+
+    public Vector3 GetPosition()
+    {
+        return m_worldMatix.GetPosition();
     }
 }

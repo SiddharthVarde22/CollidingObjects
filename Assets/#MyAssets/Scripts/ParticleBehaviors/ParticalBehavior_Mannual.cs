@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ParticalBehavior_Mannual : ParticleBehavior, IUpdatable
+public class ParticalBehavior_Mannual : ParticleBehavior, IUpdatable, ISpaceble
 {
     [SerializeField]
     bool m_shouldUpdate = true;
@@ -94,13 +94,14 @@ public class ParticalBehavior_Mannual : ParticleBehavior, IUpdatable
 
         for (int i = 0; i < m_currentSpace.ParticlesInSpace.Count; i++)
         {
-            if(m_currentSpace.ParticlesInSpace[i] == transform)
+            ISpaceble otherParticle = m_currentSpace.ParticlesInSpace[i];
+            if(otherParticle as ParticalBehavior_Mannual == this)
             {
                 continue;
             }
 
             //l_particlePosition = m_currentSpace.ParticlesInSpace[i].position;
-            l_direction = m_currentSpace.ParticlesInSpace[i].position - m_currentPosition;
+            l_direction = otherParticle.GetPosition() - m_currentPosition;
             l_distance = Mathf.Sqrt(l_direction.x * l_direction.x + l_direction.y * l_direction.y);
 
             if(l_distance <= m_radius)
@@ -131,14 +132,19 @@ public class ParticalBehavior_Mannual : ParticleBehavior, IUpdatable
         {
             Debug.LogError("Current space is null", gameObject);
         }
-        m_currentSpace.AddParticle(transform);
+        m_currentSpace.AddParticle(this);
     }
     
     private void GetRemovedFromSpace()
     {
         if(m_currentSpace != null)
         {
-            m_currentSpace.RemoveParticle(transform);
+            m_currentSpace.RemoveParticle(this);
         }
+    }
+
+    public Vector3 GetPosition()
+    {
+        return transform.position;
     }
 }
