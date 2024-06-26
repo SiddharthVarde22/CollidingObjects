@@ -921,7 +921,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8dd5559a63291644b7b077f7fb5dfba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_totalNumberOfParticlesToSpawn: 100
+  m_totalNumberOfParticlesToSpawn: 10000
   m_spawnAtRandomPosition: 1
   m_positionToSpawnAt: {x: 0, y: 0, z: 0}
   m_distanceFromBoundry: 1
@@ -929,4 +929,4 @@ MonoBehaviour:
   m_particlesToSpawnAtOnce: 50
   m_particleShouldUpdateFromStart: 1
   m_particleSpeed: 1
-  m_particleScale: 0.2
+  m_particleScale: 0.1

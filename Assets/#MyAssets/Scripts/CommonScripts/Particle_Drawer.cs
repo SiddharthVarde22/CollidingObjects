@@ -19,9 +19,9 @@ public class Particle_Drawer : GenericSingleton<Particle_Drawer>, IUpdatable
     protected override void Awake()
     {
         base.Awake();
-        m_particleMatrices = new List<Matrix4x4>();
 
         m_renderParams = new RenderParams(m_particleMaterial);
+        m_renderParams.worldBounds = new Bounds(Vector3.zero, Vector3.one * 100);
     }
 
     private void Start()
@@ -59,16 +59,27 @@ public class Particle_Drawer : GenericSingleton<Particle_Drawer>, IUpdatable
     {
         int l_remainingParticles = m_particleMatrices.Count;
         int l_maxLimitTodraw = 1023;
-        int l_loops = l_remainingParticles % l_maxLimitTodraw;
+        //int l_loops = l_remainingParticles % l_maxLimitTodraw;
 
-        for(int i = 0; i <= l_loops; i++)
+        //Debug.Log("Loops = " + l_loops + " remainimg particles = " + l_remainingParticles + " max Limit = " + l_maxLimitTodraw);
+        for (int i = 0; l_remainingParticles > 0 ; i++)
         {
             int l_startIndex = i * l_maxLimitTodraw;
             int l_countToDraw = (l_remainingParticles < l_maxLimitTodraw) ? l_remainingParticles : l_maxLimitTodraw;
-
+            //Debug.Log("Count to draw = " + l_countToDraw + "Start index = " + l_startIndex);
             Graphics.RenderMeshInstanced(m_renderParams, m_particleMesh, 0, m_particleMatrices, l_countToDraw, l_startIndex);
+
             l_remainingParticles -= l_countToDraw;
         }
+    }
 
+    public static void InitializeList(int a_maxParticleCount)
+    {
+        Instance.m_particleMatrices = new List<Matrix4x4>(a_maxParticleCount);
+    }
+
+    public static void AddRangeOfParticles(List<Matrix4x4> a_spawnedParticles)
+    {
+        Instance.m_particleMatrices.AddRange(a_spawnedParticles);
     }
 }

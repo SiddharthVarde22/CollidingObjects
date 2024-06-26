@@ -19,7 +19,7 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
 
     public bool ShouldUpdate { get { return m_shouldUpdate; } }
 
-    public Particle_CustomDraw(bool a_shouldUpdate, float a_speed, float a_scale, Vector3 a_position)
+    public Particle_CustomDraw(bool a_shouldUpdate, float a_speed, float a_scale, Vector3 a_position, int a_indexTogetDrawn)
     {
         m_shouldUpdate = a_shouldUpdate;
         m_movementSpeed = a_speed;
@@ -33,7 +33,7 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
 
         m_speedDirection = (new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), 0)).normalized;
         (m_bottomLeftCorner, m_topRightCorner) = BoundriesCalculator.GetBounries;
-        m_indexToGetDrawn = Particle_Drawer.GetAddedToMtrixList(m_worldMatix);
+        m_indexToGetDrawn = a_indexTogetDrawn;
 
         UpdateManager.SubscribeForUpdateCall(this);
         GetAddedToSpace();
@@ -132,5 +132,10 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
     public Vector3 GetPosition()
     {
         return m_worldMatix.GetPosition();
+    }
+
+    public Matrix4x4 GetWorldMatrix()
+    {
+        return m_worldMatix;
     }
 }

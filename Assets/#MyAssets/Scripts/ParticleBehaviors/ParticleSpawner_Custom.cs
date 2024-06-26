@@ -26,12 +26,16 @@ public class ParticleSpawner_Custom : MonoBehaviour, IUpdatable
 
     private int m_spawnedParticles = 0;
     Vector2 m_bottomLeftBoundry, m_topRightBoundy;
+    List<Matrix4x4> m_particlesSpawnedInFrame;
+
     public bool ShouldUpdate { get { return m_shouldUpdate; } }
 
     private void Start()
     {
         (m_bottomLeftBoundry, m_topRightBoundy) = BoundriesCalculator.GetBounries;
         UpdateManager.SubscribeForUpdateCall(this);
+        Particle_Drawer.InitializeList(m_totalNumberOfParticlesToSpawn);
+        m_particlesSpawnedInFrame = new List<Matrix4x4>(m_particlesToSpawnAtOnce);
     }
 
     private void OnDestroy()
@@ -51,10 +55,14 @@ public class ParticleSpawner_Custom : MonoBehaviour, IUpdatable
                     m_positionToSpawnAt.y = Random.Range(m_bottomLeftBoundry.y + m_distanceFromBoundry, m_topRightBoundy.y - m_distanceFromBoundry);
                 }
 
-                new Particle_CustomDraw(m_particleShouldUpdateFromStart, m_particleSpeed, m_particleScale, m_positionToSpawnAt);
+                Particle_CustomDraw l_spawnedParticle = new Particle_CustomDraw
+                    (m_particleShouldUpdateFromStart, m_particleSpeed, m_particleScale, m_positionToSpawnAt, m_spawnedParticles);
+                m_particlesSpawnedInFrame.Add(l_spawnedParticle.GetWorldMatrix());
 
                 m_spawnedParticles++;
             }
+            Particle_Drawer.AddRangeOfParticles(m_particlesSpawnedInFrame);
+            m_particlesSpawnedInFrame.Clear();
         }
     }
 }
