@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 public class Particle_Drawer : GenericSingleton<Particle_Drawer>, IUpdatable
@@ -11,7 +10,9 @@ public class Particle_Drawer : GenericSingleton<Particle_Drawer>, IUpdatable
     [SerializeField]
     bool m_shouldUpdate;
 
-    List<Matrix4x4> m_particleMatrices;
+    //List<Matrix4x4> m_particleMatrices;
+    Matrix4x4[] m_particleMatrices;
+    int m_numberOfMatrixesInArray;
     RenderParams m_renderParams;
 
     public bool ShouldUpdate { get { return m_shouldUpdate; } }
@@ -31,8 +32,8 @@ public class Particle_Drawer : GenericSingleton<Particle_Drawer>, IUpdatable
 
     protected override void OnDestroy()
     {
-        base.OnDestroy();
         UpdateManager.UnsubscribeFromUpdateCall(this);
+        base.OnDestroy();
     }
 
     public void OnUpdateCalled(float a_deltaTime)
@@ -42,22 +43,29 @@ public class Particle_Drawer : GenericSingleton<Particle_Drawer>, IUpdatable
 
     public static int GetAddedToMtrixList(Matrix4x4 a_particleMatrix)
     {
-        int l_currentCount = Instance.m_particleMatrices.Count;
-        Instance.m_particleMatrices.Add(a_particleMatrix);
+        int l_currentCount = Instance.m_particleMatrices.Length;
+        Instance.m_particleMatrices[l_currentCount] = a_particleMatrix;
         return l_currentCount;
     }
 
     public static void UpdateParticleMatrixInList(int a_index, Matrix4x4 a_newParticleMatrix)
     {
-        if(Instance.m_particleMatrices.Count > a_index)
-        {
-            Instance.m_particleMatrices[a_index] = a_newParticleMatrix;
-        }
+        Instance.m_particleMatrices[a_index] = a_newParticleMatrix;
+
+        //if (Instance.m_particleMatrices.Count > a_index)
+        //{
+        //}
+    }
+
+    public static void UpdateParticleMatrixInList(int a_index, Vector4 a_position)
+    {
+        a_position.w = 1;
+        Instance.m_particleMatrices[a_index].SetColumn(3, a_position);
     }
 
     private void DrawParticles()
     {
-        int l_remainingParticles = m_particleMatrices.Count;
+        int l_remainingParticles = m_particleMatrices.Length;
         int l_maxLimitTodraw = 1023;
         //int l_loops = l_remainingParticles % l_maxLimitTodraw;
 
@@ -75,11 +83,19 @@ public class Particle_Drawer : GenericSingleton<Particle_Drawer>, IUpdatable
 
     public static void InitializeList(int a_maxParticleCount)
     {
-        Instance.m_particleMatrices = new List<Matrix4x4>(a_maxParticleCount);
+        //Instance.m_particleMatrices = new List<Matrix4x4>(a_maxParticleCount);
+        Instance.m_particleMatrices = new Matrix4x4[a_maxParticleCount];
+        Instance.m_numberOfMatrixesInArray = 0;
     }
 
-    public static void AddRangeOfParticles(List<Matrix4x4> a_spawnedParticles)
+    public static void AddRangeOfParticles(Matrix4x4[] a_spawnedParticles)
     {
-        Instance.m_particleMatrices.AddRange(a_spawnedParticles);
+        //Instance.m_particleMatrices.AddRange(a_spawnedParticles);
+        for(int i = 0, l_length = Instance.m_numberOfMatrixesInArray; i < a_spawnedParticles.Length; i++)
+        {
+            //Debug.Log("Length = " + l_length + " i is = " + i + " incoming array length " + a_spawnedParticles.Length);
+            Instance.m_particleMatrices[l_length + i] = a_spawnedParticles[i];
+            Instance.m_numberOfMatrixesInArray++;
+        }
     }
 }

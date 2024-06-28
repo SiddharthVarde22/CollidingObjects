@@ -47,7 +47,7 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
     public void OnUpdateCalled(float a_deltaTime)
     {
         m_currentPosition += (m_speedDirection * (m_movementSpeed * a_deltaTime));
-        m_worldMatix.SetTRS(m_currentPosition, m_rotation, m_scale);
+        //m_worldMatix.SetTRS(m_currentPosition, m_rotation, m_scale);
 
         if (!m_currentSpace.CheckIfPositionExistsInSpace(m_currentPosition))
         {
@@ -58,7 +58,7 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
         CheckForBoundries();
         CheckForCollisionInSpace();
 
-        Particle_Drawer.UpdateParticleMatrixInList(m_indexToGetDrawn, m_worldMatix);
+        Particle_Drawer.UpdateParticleMatrixInList(m_indexToGetDrawn, m_currentPosition);
     }
 
     private void CheckForBoundries()
@@ -85,21 +85,28 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
             m_currentPosition.y = m_topRightCorner.y - m_scale.x;
         }
 
-        m_worldMatix.SetTRS(m_currentPosition, m_rotation, m_scale);
+        //m_worldMatix.SetColumn(3, m_currentPosition);
     }
 
     Vector3 m_directionFromParticle;
     float m_distanceFromParticle;
     private void CheckForCollisionInSpace()
     {
+        ISpaceble l_otherParticle;
+        Vector3 l_otherParticlePos;
         for (int i = 0; i < m_currentSpace.ParticlesInSpace.Count; i++)
         {
-            if (m_currentSpace.ParticlesInSpace[i] == this)
+            l_otherParticle = m_currentSpace.ParticlesInSpace[i];
+            if (l_otherParticle == this)
             {
                 continue;
             }
+            l_otherParticlePos = l_otherParticle.GetPosition();
+            //m_directionFromParticle = l_otherParticle.GetPosition() - m_currentPosition;
+            m_directionFromParticle.x = l_otherParticlePos.x - m_currentPosition.x;
+            m_directionFromParticle.y = l_otherParticlePos.y - m_currentPosition.y;
+            //m_directionFromParticle.z = l_otherParticlePos.z - m_currentPosition.z;
 
-            m_directionFromParticle = m_currentSpace.ParticlesInSpace[i].GetPosition() - m_currentPosition;
             m_distanceFromParticle = Mathf.Sqrt(m_directionFromParticle.x * m_directionFromParticle.x 
                 + m_directionFromParticle.y * m_directionFromParticle.y);
 
@@ -131,7 +138,7 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
 
     public Vector3 GetPosition()
     {
-        return m_worldMatix.GetPosition();
+        return m_currentPosition;
     }
 
     public Matrix4x4 GetWorldMatrix()

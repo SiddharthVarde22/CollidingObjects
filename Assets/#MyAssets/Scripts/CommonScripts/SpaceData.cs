@@ -25,23 +25,24 @@ public class SpaceData
 
     public void AddParticle(ISpaceble a_particleToAdd)
     {
-        if (m_particles.Contains(a_particleToAdd))
-        {
-            Debug.LogError(" Already exists in list");
-            return;
-        }
+        //if (m_particles.Contains(a_particleToAdd))
+        //{
+        //    Debug.LogError(" Already exists in list");
+        //    return;
+        //}
 
         m_particles.Add(a_particleToAdd);
     }
 
     public void RemoveParticle(ISpaceble a_particleToRemove)
     {
-        if (m_particles.Contains(a_particleToRemove))
-        {
-            m_particles.Remove(a_particleToRemove);
-            return;
-        }
-        Debug.LogError(" Does not Exists in list");
+        m_particles.Remove(a_particleToRemove);
+        return;
+
+        //if (m_particles.Contains(a_particleToRemove))
+        //{
+        //}
+        //Debug.LogError(" Does not Exists in list");
     }
 
     public bool CheckIfPositionExistsInSpace(Vector3 a_position)

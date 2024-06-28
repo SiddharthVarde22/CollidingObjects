@@ -929,4 +929,4 @@ MonoBehaviour:
   m_particlesToSpawnAtOnce: 50
   m_particleShouldUpdateFromStart: 1
   m_particleSpeed: 1
-  m_particleScale: 0.1
+  m_particleScale: 0.05

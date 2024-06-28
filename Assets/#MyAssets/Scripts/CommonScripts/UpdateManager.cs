@@ -8,20 +8,25 @@ public class UpdateManager : GenericSingleton<UpdateManager>
 
     public static void SubscribeForUpdateCall(IUpdatable a_updatable)
     {
-        if(Instance.m_ListOfUpdatables.Contains(a_updatable))
-        {
-            Debug.LogError("Already exists in list");
-            return;
-        }
+        //if(Instance.m_ListOfUpdatables.Contains(a_updatable))
+        //{
+        //    Debug.LogError("Already exists in list");
+        //    return;
+        //}
         Instance.m_ListOfUpdatables.Add(a_updatable);
     }
 
     public static void UnsubscribeFromUpdateCall(IUpdatable a_updatable)
     {
-        if(Instance != null && Instance.m_ListOfUpdatables.Contains(a_updatable))
-        {
-            Instance.m_ListOfUpdatables.Remove(a_updatable);
-        }
+        //if(Instance != null && Instance.m_ListOfUpdatables.Contains(a_updatable))
+        //{
+        //}
+        //if(Instance == null)
+        //{
+        //    Debug.Log("Instance is null");
+        //}
+        Instance?.m_ListOfUpdatables.Remove(a_updatable);
+
     }
 
     protected override void OnDestroy()
