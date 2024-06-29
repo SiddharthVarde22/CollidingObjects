@@ -7,10 +7,13 @@ public class SpaceData
 {
     Vector2 m_topLeftCorner, m_bottomRightCorner;
     List<ISpaceble> m_particles = new List<ISpaceble>();
+    bool m_isAtEdge;
 
     public IReadOnlyList<ISpaceble> ParticlesInSpace { get { return m_particles; } }
+    public bool IsAtEdge { get { return m_isAtEdge; } }
+    public int CurrentNumberOfParticles { get { return m_particles.Count; } }
 
-    public void Init(Vector2 a_topLeftCorner, float a_lengthOfSpace)
+    public void Init(Vector2 a_topLeftCorner, float a_lengthOfSpace, bool a_isAtEdge)
     {
         m_topLeftCorner = a_topLeftCorner;
 
@@ -19,6 +22,7 @@ public class SpaceData
         l_bottomRightCorner.y -= a_lengthOfSpace;
 
         m_bottomRightCorner = l_bottomRightCorner;
+        m_isAtEdge = a_isAtEdge;
 
         //Debug.LogError(m_topLeftCorner + " , " + m_bottomRightCorner);
     }

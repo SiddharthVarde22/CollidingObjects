@@ -12,10 +12,13 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
     Vector3 m_speedDirection;
     Vector2 m_bottomLeftCorner, m_topRightCorner;
     Vector3 m_currentPosition;
-    Vector3 m_scale;
-    Quaternion m_rotation;
+    //Vector3 m_scale;
+    float m_scale;
+    //Quaternion m_rotation;
     SpaceData m_currentSpace;
     int m_indexToGetDrawn;
+    //float m_bottomLeftLimit, m_bottomRightLimit, m_topLeftLimit, m_topRightLimit; 
+    //bool m_shouldCheckForBoundries = false;
 
     public bool ShouldUpdate { get { return m_shouldUpdate; } }
 
@@ -26,13 +29,16 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
         
         //m_worldMatix.position = a_position;
         m_currentPosition = a_position;
-        m_scale = Vector3.one * a_scale;
-        m_rotation = Quaternion.identity;
-        m_worldMatix.SetTRS(a_position, m_rotation, m_scale);
-
+        m_scale = a_scale;
+        //m_rotation = Quaternion.identity;
+        m_worldMatix.SetTRS(a_position, Quaternion.identity, Vector3.one * a_scale);
 
         m_speedDirection = (new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), 0)).normalized;
         (m_bottomLeftCorner, m_topRightCorner) = BoundriesCalculator.GetBounries;
+        m_bottomLeftCorner.x += m_scale;
+        m_bottomLeftCorner.y += m_scale;
+        m_topRightCorner.x -= m_scale;
+        m_topRightCorner.y -= m_scale;
         m_indexToGetDrawn = a_indexTogetDrawn;
 
         UpdateManager.SubscribeForUpdateCall(this);
@@ -46,7 +52,9 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
 
     public void OnUpdateCalled(float a_deltaTime)
     {
-        m_currentPosition += (m_speedDirection * (m_movementSpeed * a_deltaTime));
+        //m_currentPosition += (m_speedDirection * (m_movementSpeed * a_deltaTime));
+        m_currentPosition.x += (m_speedDirection.x * m_movementSpeed * a_deltaTime);
+        m_currentPosition.y += (m_speedDirection.y * m_movementSpeed * a_deltaTime);
         //m_worldMatix.SetTRS(m_currentPosition, m_rotation, m_scale);
 
         if (!m_currentSpace.CheckIfPositionExistsInSpace(m_currentPosition))
@@ -55,7 +63,10 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
             GetAddedToSpace();
         }
 
-        CheckForBoundries();
+        if (m_currentSpace.IsAtEdge)
+        {
+            CheckForBoundries();
+        }
         CheckForCollisionInSpace();
 
         Particle_Drawer.UpdateParticleMatrixInList(m_indexToGetDrawn, m_currentPosition);
@@ -63,26 +74,26 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
 
     private void CheckForBoundries()
     {
-        if (m_currentPosition.x <= (m_bottomLeftCorner.x + m_scale.x))
+        if (m_currentPosition.x <= (m_bottomLeftCorner.x))
         {
             m_speedDirection.x *= -1;
-            m_currentPosition.x = m_bottomLeftCorner.x + m_scale.x;
+            m_currentPosition.x = m_bottomLeftCorner.x;
         }
-        else if (m_currentPosition.x >= (m_topRightCorner.x - m_scale.x))
+        else if (m_currentPosition.x >= (m_topRightCorner.x))
         {
             m_speedDirection.x *= -1;
-            m_currentPosition.x = m_topRightCorner.x - m_scale.x;
+            m_currentPosition.x = m_topRightCorner.x;
         }
 
-        if (m_currentPosition.y <= (m_bottomLeftCorner.y + m_scale.x))
+        if (m_currentPosition.y <= (m_bottomLeftCorner.y))
         {
             m_speedDirection.y *= -1;
-            m_currentPosition.y = m_bottomLeftCorner.y + m_scale.x;
+            m_currentPosition.y = m_bottomLeftCorner.y;
         }
-        else if (m_currentPosition.y >= (m_topRightCorner.y - m_scale.x))
+        else if (m_currentPosition.y >= (m_topRightCorner.y))
         {
             m_speedDirection.y *= -1;
-            m_currentPosition.y = m_topRightCorner.y - m_scale.x;
+            m_currentPosition.y = m_topRightCorner.y;
         }
 
         //m_worldMatix.SetColumn(3, m_currentPosition);
@@ -94,7 +105,8 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
     {
         ISpaceble l_otherParticle;
         Vector3 l_otherParticlePos;
-        for (int i = 0; i < m_currentSpace.ParticlesInSpace.Count; i++)
+        float l_currentNumberOfParticles = m_currentSpace.CurrentNumberOfParticles;
+        for (int i = 0; i < l_currentNumberOfParticles; i++)
         {
             l_otherParticle = m_currentSpace.ParticlesInSpace[i];
             if (l_otherParticle == this)
@@ -110,9 +122,11 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
             m_distanceFromParticle = Mathf.Sqrt(m_directionFromParticle.x * m_directionFromParticle.x 
                 + m_directionFromParticle.y * m_directionFromParticle.y);
 
-            if (m_distanceFromParticle <= m_scale.x)
+            if (m_distanceFromParticle <= m_scale)
             {
-                m_speedDirection = (m_directionFromParticle / -m_distanceFromParticle);
+                //m_speedDirection = (m_directionFromParticle / -m_distanceFromParticle);
+                m_speedDirection.x = (m_directionFromParticle.x / -m_distanceFromParticle);
+                m_speedDirection.y = (m_directionFromParticle.y / -m_distanceFromParticle);
                 return;
             }
         }
@@ -121,19 +135,21 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
     private void GetAddedToSpace()
     {
         m_currentSpace = SpacePartitions.GetSpace(m_currentPosition);
-        if (m_currentSpace == null)
-        {
-            Debug.LogError("Current space is null");
-        }
+        //if (m_currentSpace == null)
+        //{
+        //    Debug.LogError("Current space is null");
+        //}
         m_currentSpace.AddParticle(this);
+        //m_shouldCheckForBoundries = m_currentSpace
     }
 
     private void GetRemovedFromSpace()
     {
-        if (m_currentSpace != null)
-        {
-            m_currentSpace.RemoveParticle(this);
-        }
+        //if (m_currentSpace != null)
+        //{
+        //}
+        m_currentSpace.RemoveParticle(this);
+
     }
 
     public Vector3 GetPosition()

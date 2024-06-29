@@ -46,12 +46,22 @@ public class SpacePartitions : GenericSingleton<SpacePartitions>
     void PopulateSpaceData()
     {
         Vector2 l_startCorner = m_topLeftCorner;
+        bool l_isAtEdge = false;
         for(int i = 0; i < m_yLength; i++)
         {
             for(int j = 0; j < m_xLength; j++)
             {
+                if(i == 0 || j == 0 || i == (m_yLength - 1) || j == (m_xLength - 1))
+                {
+                    l_isAtEdge = true;
+                }
+                else
+                {
+                    l_isAtEdge = false;
+                }
+                //Debug.Log(" is at edge = " + l_isAtEdge);
                 m_spaces[i, j] = new SpaceData();
-                m_spaces[i, j].Init(l_startCorner, m_lengthOfSpace);
+                m_spaces[i, j].Init(l_startCorner, m_lengthOfSpace, l_isAtEdge);
                 l_startCorner.x += m_lengthOfSpace;
             }
             l_startCorner.x = m_topLeftCorner.x;
