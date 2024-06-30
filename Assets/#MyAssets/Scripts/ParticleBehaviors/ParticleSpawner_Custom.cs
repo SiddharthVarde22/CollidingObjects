@@ -56,8 +56,9 @@ public class ParticleSpawner_Custom : MonoBehaviour, IUpdatable
                 }
 
                 Particle_CustomDraw l_spawnedParticle = new Particle_CustomDraw
-                    (m_particleShouldUpdateFromStart, m_particleSpeed, m_particleScale, m_positionToSpawnAt, m_spawnedParticles);
-                m_particlesSpawnedInFrame[i] = (l_spawnedParticle.GetWorldMatrix());
+                    (m_particleShouldUpdateFromStart, m_particleSpeed, m_particleScale, m_positionToSpawnAt, m_spawnedParticles,
+                    out m_particlesSpawnedInFrame[i]);
+                //m_particlesSpawnedInFrame[i] = (l_spawnedParticle.GetWorldMatrix());
 
                 m_spawnedParticles++;
             }

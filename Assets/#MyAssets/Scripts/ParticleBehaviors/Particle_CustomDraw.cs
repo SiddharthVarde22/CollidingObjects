@@ -7,7 +7,7 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
     bool m_shouldUpdate;
     float m_movementSpeed;
 
-    Matrix4x4 m_worldMatix;
+    //Matrix4x4 m_worldMatix;
 
     Vector3 m_speedDirection;
     Vector2 m_bottomLeftCorner, m_topRightCorner;
@@ -22,7 +22,7 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
 
     public bool ShouldUpdate { get { return m_shouldUpdate; } }
 
-    public Particle_CustomDraw(bool a_shouldUpdate, float a_speed, float a_scale, Vector3 a_position, int a_indexTogetDrawn)
+    public Particle_CustomDraw(bool a_shouldUpdate, float a_speed, float a_scale, Vector3 a_position, int a_indexTogetDrawn, out Matrix4x4 a_worldMatrix)
     {
         m_shouldUpdate = a_shouldUpdate;
         m_movementSpeed = a_speed;
@@ -31,7 +31,7 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
         m_currentPosition = a_position;
         m_scale = a_scale;
         //m_rotation = Quaternion.identity;
-        m_worldMatix.SetTRS(a_position, Quaternion.identity, Vector3.one * a_scale);
+        //m_worldMatix.SetTRS(a_position, Quaternion.identity, Vector3.one * a_scale);
 
         m_speedDirection = (new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), 0)).normalized;
         (m_bottomLeftCorner, m_topRightCorner) = BoundriesCalculator.GetBounries;
@@ -43,6 +43,8 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
 
         UpdateManager.SubscribeForUpdateCall(this);
         GetAddedToSpace();
+
+        a_worldMatrix = Matrix4x4.TRS(m_currentPosition, Quaternion.identity, new Vector3(a_scale, a_scale, a_scale));
     }
 
     ~Particle_CustomDraw()
@@ -157,8 +159,9 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
         return m_currentPosition;
     }
 
-    public Matrix4x4 GetWorldMatrix()
-    {
-        return m_worldMatix;
-    }
+    //public Matrix4x4 GetWorldMatrix()
+    //{
+    //    //return m_worldMatix;
+    //    return Matrix4x4.TRS(m_currentPosition, Quaternion.identity, new Vector3(m_scale, m_scale, m_scale));
+    //}
 }

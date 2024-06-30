@@ -57,10 +57,14 @@ public class Particle_Drawer : GenericSingleton<Particle_Drawer>, IUpdatable
         //}
     }
 
-    public static void UpdateParticleMatrixInList(int a_index, Vector4 a_position)
+    public static void UpdateParticleMatrixInList(int a_index, Vector3 a_position)
     {
-        a_position.w = 1;
-        Instance.m_particleMatrices[a_index].SetColumn(3, a_position);
+        //a_position.w = 1;
+        //Instance.m_particleMatrices[a_index].SetColumn(3, a_position);
+        Instance.m_particleMatrices[a_index].m03 = a_position.x;
+        Instance.m_particleMatrices[a_index].m13 = a_position.y;
+        Instance.m_particleMatrices[a_index].m23 = a_position.z;
+        //Instance.m_particleMatrices[a_index].m33 = 1;
     }
 
     private void DrawParticles()

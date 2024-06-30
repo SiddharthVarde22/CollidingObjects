@@ -37,11 +37,15 @@ public class UpdateManager : GenericSingleton<UpdateManager>
 
     private void Update()
     {
-        for(int i = 0; i < m_ListOfUpdatables.Count; i++)
+        float l_deltaTime = Time.deltaTime;
+        float l_updatablesCount = m_ListOfUpdatables.Count;
+        IUpdatable l_updatable;
+        for(int i = 0; i < l_updatablesCount; i++)
         {
-            if(m_ListOfUpdatables[i] != null && m_ListOfUpdatables[i].ShouldUpdate)
+            l_updatable = m_ListOfUpdatables[i];
+            if(l_updatable != null && l_updatable.ShouldUpdate)
             {
-                m_ListOfUpdatables[i].OnUpdateCalled(Time.deltaTime);
+                l_updatable.OnUpdateCalled(l_deltaTime);
             }
         }
     }
