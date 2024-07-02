@@ -63,4 +63,9 @@ public class SpaceData
     {
         return (a_y <= m_topLeftCorner.y && a_y >= m_bottomRightCorner.y);
     }
+
+    public ISpaceble GetParticle(int index)
+    {
+        return m_particles[index];
+    }
 }

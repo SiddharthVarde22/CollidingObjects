@@ -101,36 +101,62 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
         //m_worldMatix.SetColumn(3, m_currentPosition);
     }
 
-    Vector3 m_directionFromParticle;
-    float m_distanceFromParticle;
+    //Vector3 m_directionFromParticle;
+    //float m_distanceFromParticle;
     private void CheckForCollisionInSpace()
     {
+        IReadOnlyList<ISpaceble> l_particleInspace = m_currentSpace.ParticlesInSpace;
         ISpaceble l_otherParticle;
         Vector3 l_otherParticlePos;
-        float l_currentNumberOfParticles = m_currentSpace.CurrentNumberOfParticles;
+        float l_currentNumberOfParticles = l_particleInspace.Count;
+        //float l_currentNumberOfParticles = m_currentSpace.CurrentNumberOfParticles;
+
+        float l_rightCollisionPosition, l_leftCollisionPosition, l_upCollisionPosition, l_downCollisionPosition;
+        l_rightCollisionPosition = m_currentPosition.x + m_scale;
+        l_leftCollisionPosition = m_currentPosition.x - m_scale;
+        l_upCollisionPosition = m_currentPosition.y + m_scale;
+        l_downCollisionPosition = m_currentPosition.y - m_scale;
+        
         for (int i = 0; i < l_currentNumberOfParticles; i++)
         {
-            l_otherParticle = m_currentSpace.ParticlesInSpace[i];
+            //l_otherParticle = m_currentSpace.ParticlesInSpace[i];
+            l_otherParticle = l_particleInspace[i];
             if (l_otherParticle == this)
             {
                 continue;
             }
             l_otherParticlePos = l_otherParticle.GetPosition();
+
+            if(
+                (l_otherParticlePos.x > l_rightCollisionPosition) || 
+                (l_otherParticlePos.x < l_leftCollisionPosition) ||
+                (l_otherParticlePos.y > l_upCollisionPosition) ||
+                (l_otherParticlePos.y < l_downCollisionPosition)
+              )
+            {
+                continue;
+            }
+
+            Vector2 l_directionFromParticle;// = Vector2.zero;
+            float l_distanceFromParticle;
             //m_directionFromParticle = l_otherParticle.GetPosition() - m_currentPosition;
-            m_directionFromParticle.x = l_otherParticlePos.x - m_currentPosition.x;
-            m_directionFromParticle.y = l_otherParticlePos.y - m_currentPosition.y;
+            l_directionFromParticle.x = l_otherParticlePos.x - m_currentPosition.x;
+            l_directionFromParticle.y = l_otherParticlePos.y - m_currentPosition.y;
             //m_directionFromParticle.z = l_otherParticlePos.z - m_currentPosition.z;
 
-            m_distanceFromParticle = Mathf.Sqrt(m_directionFromParticle.x * m_directionFromParticle.x 
-                + m_directionFromParticle.y * m_directionFromParticle.y);
+            l_distanceFromParticle = Mathf.Sqrt(l_directionFromParticle.x * l_directionFromParticle.x 
+                + l_directionFromParticle.y * l_directionFromParticle.y);
 
-            if (m_distanceFromParticle <= m_scale)
-            {
-                //m_speedDirection = (m_directionFromParticle / -m_distanceFromParticle);
-                m_speedDirection.x = (m_directionFromParticle.x / -m_distanceFromParticle);
-                m_speedDirection.y = (m_directionFromParticle.y / -m_distanceFromParticle);
-                return;
-            }
+            //if (m_distanceFromParticle <= m_scale)
+            //{
+            //    //m_speedDirection = (m_directionFromParticle / -m_distanceFromParticle);
+            //    m_speedDirection.x = (m_directionFromParticle.x / -m_distanceFromParticle);
+            //    m_speedDirection.y = (m_directionFromParticle.y / -m_distanceFromParticle);
+            //    return;
+            //}
+
+            m_speedDirection.x = -l_directionFromParticle.x / l_distanceFromParticle;
+            m_speedDirection.y = -l_directionFromParticle.y / l_distanceFromParticle;
         }
     }
 
