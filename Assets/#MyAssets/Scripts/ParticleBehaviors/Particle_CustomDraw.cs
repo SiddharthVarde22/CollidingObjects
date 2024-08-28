@@ -157,6 +157,7 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
 
             m_speedDirection.x = -l_directionFromParticle.x / l_distanceFromParticle;
             m_speedDirection.y = -l_directionFromParticle.y / l_distanceFromParticle;
+            break;
         }
     }
 
