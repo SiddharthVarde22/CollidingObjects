@@ -45,6 +45,14 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
         GetAddedToSpace();
 
         a_worldMatrix = Matrix4x4.TRS(m_currentPosition, Quaternion.identity, new Vector3(a_scale, a_scale, a_scale));
+        //a_worldMatrix = new Matrix4x4();
+        //a_worldMatrix[0, 0] = a_scale;
+        //a_worldMatrix[1, 1] = a_scale;
+        //a_worldMatrix[2, 2] = a_scale;
+        //a_worldMatrix[0, 3] = m_currentPosition.x;
+        //a_worldMatrix[1, 3] = m_currentPosition.y;
+        //a_worldMatrix[2, 3] = 0;
+        //a_worldMatrix[3, 3] = 1;
     }
 
     ~Particle_CustomDraw()
