@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Particle_CustomDraw : IUpdatable, ISpaceble
+public class Particle_CustomDraw : ILateUpdatable, ISpaceable
 {
     bool m_shouldUpdate;
     float m_movementSpeed;
@@ -20,7 +20,10 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
     //float m_bottomLeftLimit, m_bottomRightLimit, m_topLeftLimit, m_topRightLimit; 
     //bool m_shouldCheckForBoundries = false;
 
-    public bool ShouldUpdate { get { return m_shouldUpdate; } }
+    public bool ShouldUpdate()
+    {
+        return m_shouldUpdate;
+    }
 
     public Particle_CustomDraw(bool a_shouldUpdate, float a_speed, float a_scale, Vector3 a_position, int a_indexTogetDrawn, out Matrix4x4 a_worldMatrix)
     {
@@ -41,7 +44,7 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
         m_topRightCorner.y -= m_scale;
         m_indexToGetDrawn = a_indexTogetDrawn;
 
-        UpdateManager.SubscribeForUpdateCall(this);
+        UpdateManager.SubscribeForLateUpdateCall(this);
         GetAddedToSpace();
 
         a_worldMatrix = Matrix4x4.TRS(m_currentPosition, Quaternion.identity, new Vector3(a_scale, a_scale, a_scale));
@@ -57,10 +60,10 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
 
     ~Particle_CustomDraw()
     {
-        UpdateManager.UnsubscribeFromUpdateCall(this);
+        UpdateManager.UnsubscribeFromLateUpdateCall(this);
     }
 
-    public void OnUpdateCalled(float a_deltaTime)
+    public void OnLateUpdateCalled(float a_deltaTime)
     {
         //m_currentPosition += (m_speedDirection * (m_movementSpeed * a_deltaTime));
         m_currentPosition.x += (m_speedDirection.x * m_movementSpeed * a_deltaTime);
@@ -77,7 +80,7 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
         {
             CheckForBoundries();
         }
-        CheckForCollisionInSpace();
+        //CheckForCollisionInSpace();
 
         Particle_Drawer.UpdateParticleMatrixInList(m_indexToGetDrawn, m_currentPosition);
     }
@@ -113,8 +116,8 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
     //float m_distanceFromParticle;
     private void CheckForCollisionInSpace()
     {
-        IReadOnlyList<ISpaceble> l_particleInspace = m_currentSpace.ParticlesInSpace;
-        ISpaceble l_otherParticle;
+        IReadOnlyList<ISpaceable> l_particleInspace = m_currentSpace.ParticlesInSpace;
+        ISpaceable l_otherParticle;
         Vector3 l_otherParticlePos;
         float l_currentNumberOfParticles = l_particleInspace.Count;
         //float l_currentNumberOfParticles = m_currentSpace.CurrentNumberOfParticles;
@@ -192,6 +195,21 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
     public Vector3 GetPosition()
     {
         return m_currentPosition;
+    }
+
+    public Vector3 GetSpeedDirection()
+    {
+        return m_speedDirection;
+    }
+
+    public void SetSpeedDirection(Vector3 a_speedDirection)
+    {
+        m_speedDirection = a_speedDirection;
+    }
+
+    public float GetScale()
+    {
+        return m_scale;
     }
 
     //public Matrix4x4 GetWorldMatrix()

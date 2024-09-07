@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ParticalBehavior_Mannual : ParticleBehavior, IUpdatable, ISpaceble
+public class ParticalBehavior_Mannual : ParticleBehavior, IUpdatable, ISpaceable
 {
     [SerializeField]
     bool m_shouldUpdate = true;
@@ -94,7 +94,7 @@ public class ParticalBehavior_Mannual : ParticleBehavior, IUpdatable, ISpaceble
 
         for (int i = 0; i < m_currentSpace.ParticlesInSpace.Count; i++)
         {
-            ISpaceble otherParticle = m_currentSpace.ParticlesInSpace[i];
+            ISpaceable otherParticle = m_currentSpace.ParticlesInSpace[i];
             if(otherParticle as ParticalBehavior_Mannual == this)
             {
                 continue;
@@ -146,5 +146,20 @@ public class ParticalBehavior_Mannual : ParticleBehavior, IUpdatable, ISpaceble
     public Vector3 GetPosition()
     {
         return transform.position;
+    }
+
+    public Vector3 GetSpeedDirection()
+    {
+        return m_speedDirection;
+    }
+
+    public float GetScale()
+    {
+        return m_radius;
+    }
+
+    public void SetSpeedDirection(Vector3 a_speedDirection)
+    {
+        m_speedDirection = a_speedDirection;
     }
 }
