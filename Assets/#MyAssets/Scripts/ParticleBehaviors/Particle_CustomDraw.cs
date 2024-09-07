@@ -77,7 +77,7 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
         {
             CheckForBoundries();
         }
-        CheckForCollisionInSpace();
+        //CheckForCollisionInSpace();
 
         Particle_Drawer.UpdateParticleMatrixInList(m_indexToGetDrawn, m_currentPosition);
     }
@@ -192,6 +192,18 @@ public class Particle_CustomDraw : IUpdatable, ISpaceble
     public Vector3 GetPosition()
     {
         return m_currentPosition;
+    }
+    public Vector3 GetDirection()
+    {
+        return m_speedDirection;
+    }
+    public float GetSize()
+    {
+        return m_scale;
+    }
+    public void SetDirection(Vector3 a_direction)
+    {
+        m_speedDirection = a_direction;
     }
 
     //public Matrix4x4 GetWorldMatrix()

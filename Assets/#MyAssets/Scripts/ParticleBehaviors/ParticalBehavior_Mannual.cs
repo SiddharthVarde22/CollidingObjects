@@ -147,4 +147,16 @@ public class ParticalBehavior_Mannual : ParticleBehavior, IUpdatable, ISpaceble
     {
         return transform.position;
     }
+    public Vector3 GetDirection()
+    {
+        return m_speedDirection;
+    }
+    public float GetSize()
+    {
+        return m_radius;
+    }
+    public void SetDirection(Vector3 a_direction)
+    {
+        m_speedDirection = a_direction;
+    }
 }
