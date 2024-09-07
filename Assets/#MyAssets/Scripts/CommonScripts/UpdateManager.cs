@@ -5,6 +5,7 @@ using UnityEngine;
 public class UpdateManager : GenericSingleton<UpdateManager>
 {
     private List<IUpdatable> m_ListOfUpdatables = new List<IUpdatable>();
+    private List<ILateUpdatable> m_LateUpdatables = new List<ILateUpdatable>();
 
     public static void SubscribeForUpdateCall(IUpdatable a_updatable)
     {
@@ -29,9 +30,20 @@ public class UpdateManager : GenericSingleton<UpdateManager>
 
     }
 
+    public static void SubscribeToLateUpdateCallback(ILateUpdatable a_lateUpdatable)
+    {
+        Instance.m_LateUpdatables.Add(a_lateUpdatable);
+    }
+
+    public static void UnSubscribeFromLateUpdate(ILateUpdatable a_lateUpdatable)
+    {
+        Instance?.m_LateUpdatables.Remove(a_lateUpdatable);
+    }
+
     protected override void OnDestroy()
     {
         m_ListOfUpdatables.Clear();
+        m_LateUpdatables.Clear();
         base.OnDestroy();
     }
 
@@ -46,6 +58,22 @@ public class UpdateManager : GenericSingleton<UpdateManager>
             if(l_updatable != null && l_updatable.ShouldUpdate)
             {
                 l_updatable.OnUpdateCalled(l_deltaTime);
+            }
+        }
+    }
+
+    private void LateUpdate()
+    {
+        float l_deltaTime = Time.deltaTime;
+        int l_count = m_LateUpdatables.Count;
+        ILateUpdatable l_lateUpdatable;
+
+        for(int i = 0; i < l_count; i++)
+        {
+            l_lateUpdatable = m_LateUpdatables[i];
+            if(l_lateUpdatable.ShouldUpdate())
+            {
+                l_lateUpdatable.OnLateUpdateCalled(l_deltaTime);
             }
         }
     }
