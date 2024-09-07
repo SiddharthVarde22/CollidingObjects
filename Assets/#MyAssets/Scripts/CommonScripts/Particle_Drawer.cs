@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-public class Particle_Drawer : GenericSingleton<Particle_Drawer>, IUpdatable
+public class Particle_Drawer : GenericSingleton<Particle_Drawer>, ILateUpdatable
 {
     [SerializeField]
     Mesh m_particleMesh;
@@ -15,7 +15,10 @@ public class Particle_Drawer : GenericSingleton<Particle_Drawer>, IUpdatable
     int m_numberOfMatrixesInArray;
     RenderParams m_renderParams;
 
-    public bool ShouldUpdate { get { return m_shouldUpdate; } }
+    public bool ShouldUpdate()
+    {
+        return m_shouldUpdate; 
+    }
 
     protected override void Awake()
     {
@@ -27,16 +30,16 @@ public class Particle_Drawer : GenericSingleton<Particle_Drawer>, IUpdatable
 
     private void Start()
     {
-        UpdateManager.SubscribeForUpdateCall(this);
+        UpdateManager.SubscribeForLateUpdateCall(this);
     }
 
     protected override void OnDestroy()
     {
-        UpdateManager.UnsubscribeFromUpdateCall(this);
+        UpdateManager.UnsubscribeFromLateUpdateCall(this);
         base.OnDestroy();
     }
 
-    public void OnUpdateCalled(float a_deltaTime)
+    public void OnLateUpdateCalled(float a_deltaTime)
     {
         DrawParticles();
     }
